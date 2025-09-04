@@ -191,7 +191,6 @@ T 1641025000 15000.00 ACC004 ACC001 Another large transfer
 ## Consideraciones Importantes
 
 - **No hardcodees valores específicos** - tu solución será probada con otros archivos de transacciones
-- **Usa funciones de Prelude** como `read`, `words`, `unwords`, `take`, `drop`, `filter`, `map`, `foldr` para hacer tu código más conciso y funcional
 - **Puedes discutir el ejercicio con compañeros**, pero debes escribir tu propia solución
 - **Las transacciones inválidas deben ser ignoradas** en todos los cálculos y análisis
 - **Maneja casos edge** como cuentas inexistentes (deben devolver balance 0)
