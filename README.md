@@ -130,29 +130,34 @@ Esta función debe:
 
 Implementa la función:
 ```haskell
-data AccountSummary = AccountSummary
-  { depositsCount    :: Int
-  , withdrawalsCount :: Int
-  , transfersCount   :: Int
-  , finalBalance     :: Double
-  } deriving (Show, Eq)
-
 accountSummary :: String -> [Transaction] -> AccountSummary
 ```
 
 Esta función debe devolver un resumen de la actividad de una cuenta específica en formato:
-`(depósitos_count, retiros_count, transferencias_count, balance_final)`
 
-Donde:
-- `depósitos_count`: número de depósitos recibidos
-- `retiros_count`: número de retiros realizados  
-- `transferencias_count`: número de transferencias (enviadas + recibidas)
-- `balance_final`: balance final de la cuenta
+```haskell
+data AccountSummary = AccountSummary
+  { depositsCount    :: Int -- número de depósitos recibidos
+  , withdrawalsCount :: Int --número de retiros realizados  
+  , transfersCount   :: Int -- número de transferencias (enviadas + recibidas)
+  , finalBalance     :: Double -- balance final de la cuenta
+   } deriving (Show, Eq)
+
+```
+
 
 **Ejemplo:**
 ```haskell
-accountSummary "ACC001" transactions == (2, 1, 3, 850.25)
--- 2 depósitos recibidos, 1 retiro realizado, 3 transferencias (enviadas/recibidas), balance final 850.25
+accountSummary "ACC001" transactions ==
+  AccountSummary
+    { depositsCount    = 2
+    , withdrawalsCount = 1
+    , transfersCount   = 3
+    , finalBalance     = 850.25
+    }
+-- 2 depósitos recibidos, 1 retiro realizado,
+-- 3 transferencias (enviadas/recibidas),
+-- balance final 850.25
 ```
 
 
