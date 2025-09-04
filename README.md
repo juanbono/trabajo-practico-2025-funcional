@@ -25,7 +25,7 @@ Cada línea del archivo representa una transacción diferente. Cada línea comie
 **Transferencias:** `T <timestamp> <monto> <cuenta_origen> <cuenta_destino> <descripcion>`
 - Ejemplo: `T 1641000000 750.25 ACC001 ACC002 Rent payment`
 
-Los timestamps son enteros que representan tiempo Unix, y los montos son números decimales.
+Los timestamps son enteros que representan formato [Unix Timestamp](https://es.wikipedia.org/wiki/Tiempo_Unix), y los montos son números decimales.
 
 ---
 
@@ -130,8 +130,14 @@ Esta función debe:
 
 Implementa la función:
 ```haskell
+data AccountSummary = AccountSummary
+  { depositsCount    :: Int
+  , withdrawalsCount :: Int
+  , transfersCount   :: Int
+  , finalBalance     :: Double
+  } deriving (Show, Eq)
 
-accountSummary :: String -> [Transaction] -> (Int, Int, Int, Double)
+accountSummary :: String -> [Transaction] -> AccountSummary
 ```
 
 Esta función debe devolver un resumen de la actividad de una cuenta específica en formato:
@@ -191,7 +197,6 @@ T 1641025000 15000.00 ACC004 ACC001 Another large transfer
 ## Consideraciones Importantes
 
 - **No hardcodees valores específicos** - tu solución será probada con otros archivos de transacciones
-- **Puedes discutir el ejercicio con compañeros**, pero debes escribir tu propia solución
 - **Las transacciones inválidas deben ser ignoradas** en todos los cálculos y análisis
 - **Maneja casos edge** como cuentas inexistentes (deben devolver balance 0)
 
