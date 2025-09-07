@@ -2,11 +2,12 @@
 
 ## Situación Problemática
 
-¡El sistema bancario ha sufrido un ataque cibernético! Los hackers han mezclado y corrompido los archivos de transacciones bancarias. Necesitamos un programa para analizar estas transacciones, calcular balances de cuentas e identificar actividades sospechosas.
+¡El sistema bancario ha sufrido un ataque cibernético! Los hackers han mezclado y corrompido los archivos con las transacciones bancarias. Necesitamos un programa para analizar estas transacciones, calcular balances de cuentas e identificar actividades sospechosas.
+Para ayudarnos a resolver este problema, el banco nos proporciono parte del archivo de transacciones. 
 
 ---
 
-## Formato de las Transacciones
+## Formato del archivo de Transacciones
 
 Cada línea del archivo representa una transacción diferente. Cada línea comienza con un carácter que indica el tipo de transacción:
 
@@ -25,32 +26,41 @@ Cada línea del archivo representa una transacción diferente. Cada línea comie
 **Transferencias:** `T <timestamp> <monto> <cuenta_origen> <cuenta_destino> <descripcion>`
 - Ejemplo: `T 1641000000 750.25 ACC001 ACC002 Rent payment`
 
-Los timestamps son enteros que representan formato [Unix Timestamp](https://es.wikipedia.org/wiki/Tiempo_Unix), y los montos son números decimales.
+Los timestamps son numeros enteros que representan formato [Unix Timestamp](https://es.wikipedia.org/wiki/Tiempo_Unix), y los montos son numeros en coma flotante de doble precision.
 
 ---
 
 ## Tipos de Datos Proporcionados
 
 ```haskell
-data TransactionType = Deposit Double String      -- monto, cuenta_destino
-                    | Withdrawal Double String    -- monto, cuenta_origen  
-                    | Transfer Double String String -- monto, origen, destino
-                    deriving (Show, Eq)
+-- | Representa los tipos de transacciones posibles
+data TransactionType
+  -- | Deposit: deposito de un monto dado (como Double) a una cuenta.
+  = Deposit Double String
+  -- | Withdrawal: retiro de un monto dado (como Double) de una cuenta.
+  | Withdrawal Double String 
+  -- | Transfer: transferencia de un monto dado (como Double) de una cuenta origen a una cuenta destino.
+  | Transfer Double String String 
+  deriving (Show, Eq) 
 
-type TimeStamp = Int
-
-data Transaction = Transaction TransactionType TimeStamp String  -- tipo, timestamp, descripción
-                | InvalidTransaction String                       -- línea inválida
-                deriving (Show, Eq)
+-- | Tipo de dato de las transacciones. Puede o bien ser una transaccion correcta o una transaccion inválida.
+data Transaction
+  -- | Transaction: transacción con un tipo, timestamp y descripción.
+  = Transaction { tipo :: TransactionType, timestamp :: Int, descripcion :: String}
+  -- | InvalidTransaction: transacción inválida, contiene el string original.
+  | InvalidTransaction String 
+  deriving (Show, Eq)
 ```
 
 ---
 
 ## Ejercicios
 
-### Ejercicio 1: Parsing de Transacciones 
+### Ejercicio 1: Parseo de Transacciones 
 
-Implementa la función:
+Antes de comenzar el analisis de los logs, deberemos convertir cada elemento del archivo en un tipo de dato que represente cada transaccion.
+
+Para ello deberemos procesar cada linea del archivo (un string) y convertirla en un tipo de dato `Transaction` e implementar la siguiente funcion:
 ```haskell
 parseTransaction :: String -> Transaction
 ```
@@ -72,24 +82,36 @@ parseTransaction "Invalid line format"
 == InvalidTransaction "Invalid line format"
 ```
 
-Luego implementa:
+Una vez completada esta primer tarea, vamos a estar en condiciones de parsear el archivo de transacciones completo.
+Para eso, implementa la funcion `parseTransactions` con el siguiente tipo:
 ```haskell
 parseTransactions :: String -> [Transaction]
 ```
+Esta funcion debera tomar como argumento el path del archivo (su ruta en el sistema de archivos), procesar cada linea del archivo y devolver una lista de transacciones.
 
-Para parsear un archivo completo de transacciones.
+Por suerte, el equipo interno del banco nos proporciono la funcion `readTransactionFile` que nos permite leer el archivo de transacciones y obtener una lista de strings, donde cada uno representa una linea del archivo. Se aconseja probar esta funcion en el interprete para ver como funciona.
 
+**Ejemplo:**
+```haskell
+parseTransactions "transactions.log"
+== [Transaction (Deposit 1500.50 "ACC001") 1640995200 "Salary deposit",
+    Transaction (Withdrawal 200.00 "ACC002") 1640995800 "ATM withdrawal",
+    Transaction (Transfer 750.25 "ACC001" "ACC002") 1641000000 "Rent payment",
+    InvalidTransaction "Invalid line format"]
+```
 
 ---
 
 ### Ejercicio 2: Cálculo de Balance de Cuenta
 
-Implementa la función:
+Ahora que tenemos las transacciones parseadas, estamos en condiciones de comenzar el analisis.
+
+Para ello deberemos implementar la función:
 ```haskell
 accountBalance :: String -> [Transaction] -> Double
 ```
 
-Esta función calcula el balance final de una cuenta específica considerando todas las transacciones que la afectan:
+Esta función debera calcular el balance final de una cuenta específica considerando todas las transacciones que la afectan:
 - **Depósitos:** suman al balance de la cuenta destino
 - **Retiros:** restan del balance de la cuenta origen  
 - **Transferencias:** restan del balance de la cuenta origen y suman al balance de la cuenta destino
@@ -163,7 +185,7 @@ accountSummary "ACC001" transactions ==
 
 ## Datos de Prueba
 
-### Contenido de `sample_transactions.log`:
+### Contenido de `transactions.log`:
 ```
 D 1640995200 1500.50 ACC001 Salary deposit
 W 1640995800 200.00 ACC001 ATM withdrawal
@@ -203,7 +225,7 @@ T 1641025000 15000.00 ACC004 ACC001 Another large transfer
 
 - **No hardcodees valores específicos** - tu solución será probada con otros archivos de transacciones
 - **Las transacciones inválidas deben ser ignoradas** en todos los cálculos y análisis
-- **Maneja casos edge** como cuentas inexistentes (deben devolver balance 0)
+- **Maneja casos borde** como cuentas inexistentes (deben devolver balance 0)
 
 
 
